@@ -116,6 +116,20 @@ bash 'openvpn-server-key' do
   not_if { ::File.exist?("#{key_dir}/server.crt") }
 end
 
+bash 'openvpn-ta-key' do
+  environment('KEY_CN' => 'server')
+  code <<-EOF
+    openvpn --genkey --secret #{key_dir}/ta.key
+  EOF
+  not_if { ::File.exist?("#{key_dir}/ta.key") }
+end
+
+file "#{key_dir}/ta.key" do
+  owner 'root'
+  group 'root'
+  mode  '0600'
+end
+
 [node['openvpn']['signing_ca_key'], "#{key_dir}/server.key"].each do |key|
   file key do
     # Just fixes permissions.
@@ -126,10 +140,17 @@ end
   end
 end
 
+
 openvpn_conf 'server' do
   notifies :restart, 'service[openvpn]'
   only_if { node['openvpn']['configure_default_server'] }
   action :create
+end
+
+# enable ip forwarding via sysctl
+include_recipe 'sysctl::default'
+sysctl_param 'net.ipv4.ip_forward' do
+  value 1
 end
 
 include_recipe 'openvpn::service'
