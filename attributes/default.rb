@@ -63,7 +63,7 @@ default['openvpn']['config']['group'] = value_for_platform_family(rhel: 'nobody'
                                                                  )
 
 default['openvpn']['config']['local']           = node['ipaddress']
-default['openvpn']['config']['proto']           = 'tcp'
+default['openvpn']['config']['proto']           = 'udp'
 default['openvpn']['config']['port']            = '1194'
 default['openvpn']['config']['keepalive']       = '10 120'
 default['openvpn']['config']['log']             = '/var/log/openvpn.log'
@@ -88,4 +88,12 @@ when 'server'
   default['openvpn']['config']['dev'] = 'tun0'
 when 'server-bridge'
   default['openvpn']['config']['dev'] = 'tap0'
+end
+
+# tls-authentication
+case node['openvpn']['type']
+when 'client'
+  default['openvpn']['config']['tls-auth'] = 'ta.key 1'
+when 'server'
+  default['openvpn']['config']['tls-auth'] = "#{node['openvpn']['key_dir']}/ta.key 0"
 end

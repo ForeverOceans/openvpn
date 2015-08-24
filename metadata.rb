@@ -16,7 +16,6 @@ recipe 'openvpn::users',           'Sets up openvpn cert/configs for users data 
 depends 'apt'
 depends 'yum', '~> 3.0'
 depends 'yum-epel'
-depends 'sysctl'
 
 supports 'arch'
 supports 'centos'
