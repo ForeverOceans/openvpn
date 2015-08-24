@@ -92,7 +92,7 @@ end
 
 # tls-authentication
 case node['openvpn']['type']
-when 'client'
+]when 'client'
   default['openvpn']['config']['tls-auth'] = 'ta.key 1'
 when 'server'
   default['openvpn']['config']['tls-auth'] = "#{node['openvpn']['key_dir']}/ta.key 0"
