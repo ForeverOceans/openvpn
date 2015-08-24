@@ -116,6 +116,7 @@ bash 'openvpn-server-key' do
   not_if { ::File.exist?("#{key_dir}/server.crt") }
 end
 
+# create tls-authentication key
 bash 'openvpn-ta-key' do
   environment('KEY_CN' => 'server')
   code <<-EOF
@@ -145,12 +146,6 @@ openvpn_conf 'server' do
   notifies :restart, 'service[openvpn]'
   only_if { node['openvpn']['configure_default_server'] }
   action :create
-end
-
-# enable ip forwarding via sysctl
-include_recipe 'sysctl::default'
-sysctl_param 'net.ipv4.ip_forward' do
-  value 1
 end
 
 include_recipe 'openvpn::service'
